@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 
 class CalculatorScreen extends StatefulWidget {
-  final Function _updateHistory;
+  final Function(String) updateHistory;
 
-  const CalculatorScreen(this._updateHistory, {super.key});
+  const CalculatorScreen({super.key, required this.updateHistory});
 
   @override
-  State<StatefulWidget> createState() {
-    return _CalculatorScreenState();
-  }
+  _CalculatorScreenState createState() => _CalculatorScreenState();
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
   String input = "";
   String result = "";
-  void _calculate() {
-    widget._updateHistory(result);
-    setState(() {
-      result = input;
-      // I can't add new item to the history array
-    });
+
+  void calculate() {
+    try {
+      result = (double.parse(input)).toString();
+      widget.updateHistory("$input = $result");
+      setState(() {});
+    } catch (e) {
+      result = "Error";
+    }
   }
 
   @override
@@ -41,7 +42,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ),
           ),
           ElevatedButton(
-            onPressed: _calculate,
+            onPressed: calculate,
             child: const Text('Calculate'),
           ),
           const SizedBox(height: 20),

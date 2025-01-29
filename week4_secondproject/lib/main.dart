@@ -1,57 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:week4_secondproject/CalculatorScreen.dart';
-import 'package:week4_secondproject/HistoryScreen.dart';
+import './HistoryScreen.dart';
+import './CalculatorScreen.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
-  State<StatefulWidget> createState() {
-    return _MainAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter App',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MainScreen(),
+    );
   }
 }
 
-class _MainAppState extends State<MainApp> {
-  List<Widget> _screens = [];
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  _MainScreenState createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
   List<String> history = [];
+
+  final List<Widget> _screens = [];
 
   @override
   void initState() {
     super.initState();
-    _screens
-        .addAll([CalculatorScreen(_onUpdateHistory), HistoryScreen(history)]);
+    _screens.addAll([
+      CalculatorScreen(updateHistory: _updateHistory),
+      HistoryScreen(history: history),
+    ]);
   }
 
-  void _onUpdateHistory(newItem) {
+  void _updateHistory(String calculation) {
     setState(() {
-      history.add(newItem);
+      history.add(calculation);
     });
   }
 
-  int _selecteeIndex = 0;
-  void _onTap(int newIndex) {
+  void _onItemTapped(int index) {
     setState(() {
-      _selecteeIndex = newIndex;
+      _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-          bottomNavigationBar: BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.calculate), label: 'Calculator'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.history), label: 'History')
-            ],
-            currentIndex: _selecteeIndex,
-            onTap: (value) => _onTap(value),
-          ),
-          body: _screens[_selecteeIndex]),
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calculate), label: 'Calculator'),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
