@@ -18,7 +18,7 @@ class NetworkingManager {
 
   Future<WeatherModel> getWeather(String cityName) async {
     http.Response response = await http.get(Uri.parse(
-        'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid=071c3ffca10be01d334505630d2c1a9c&units=metric'));
+        'https://api.openweathermap.org/data/2.5/weather?q=$cityName&appid="Get your own key"&units=metric'));
     if (response.statusCode == 200) {
       var jsonObj = jsonDecode(response.body);
       var temp = jsonObj['main']['temp'] as double;
