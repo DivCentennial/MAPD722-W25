@@ -58,7 +58,7 @@ class CitySearchDelegate extends SearchDelegate {
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.pushNamed(context, '/weather',
-                        arguments: citiesList[index] as String);
+                        arguments: [1, citiesList[index] as String, 0.0, 0.0]);
                   },
                 ));
       },

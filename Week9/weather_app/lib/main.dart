@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/MainMenuScreen.dart';
 import 'package:weather_app/SearchScreen.dart';
 import 'package:weather_app/WeatherScreen.dart';
 
@@ -14,7 +15,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Weather App',
       routes: {
-        '/': (context) => SearchScreen(),
+        '/': (context) => MainMenuScreen(),
+        '/search': (context) => SearchScreen(),
         '/weather': (context) => WeatherScreen()
       },
     );

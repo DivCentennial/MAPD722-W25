@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/NetworkingManager.dart';
 import 'package:weather_app/WeatherModel.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class WeatherScreen extends StatefulWidget {
   @override
@@ -17,19 +18,38 @@ class _weatherScreenState extends State<WeatherScreen> {
     return weatherObject;
   }
 
+  Future getWeatheInLocation(double lon, double lat) async {
+    weatherObject =
+        await NetworkingManager().getWeatherDataBasedOnLocation(lon, lat);
+    print("after getting the weather");
+    print(weatherObject.icon);
+    print(weatherObject.temp);
+
+    return weatherObject;
+  }
+
   @override
   Widget build(BuildContext context) {
-    var cityName = ModalRoute.of(context)!.settings.arguments as String;
+    var listOfArguments = ModalRoute.of(context)!.settings.arguments as List;
+    var source = listOfArguments[0] as int;
+    var cityName = listOfArguments[1] as String;
+    var lon = listOfArguments[2] as double;
+    var lat = listOfArguments[3] as double;
+    GoogleMapController? _mapController;
+    LatLng? _currentLocation;
+    _currentLocation = LatLng(lat, lon);
 
+    //_currentLocation =
     return Scaffold(
         body: FutureBuilder(
-            future: getWeatherDataFromAPI(cityName),
+            future: (source == 1)
+                ? getWeatherDataFromAPI(cityName)
+                : getWeatheInLocation(lon, lat),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Center(
                   child: Column(
                     children: [
-                      const Spacer(),
                       Text(
                         weatherObject.cityName,
                         style: const TextStyle(fontSize: 30),
@@ -45,7 +65,30 @@ class _weatherScreenState extends State<WeatherScreen> {
                         width: 100,
                         height: 100,
                       ),
-                      const Spacer(),
+                      (source == 2)
+                          ? Expanded(
+                              child: _currentLocation == null
+                                  ? const Center(
+                                      child: CircularProgressIndicator())
+                                  : GoogleMap(
+                                      initialCameraPosition: CameraPosition(
+                                        target: _currentLocation!,
+                                        zoom: 15,
+                                      ),
+                                      onMapCreated: (controller) {
+                                        _mapController = controller;
+                                      },
+                                      markers: {
+                                        Marker(
+                                          markerId:
+                                              const MarkerId("currentLocation"),
+                                          position: _currentLocation!,
+                                          infoWindow: const InfoWindow(
+                                              title: "You are here"),
+                                        ),
+                                      },
+                                    ))
+                          : const Text("")
                     ],
                   ),
                 );
